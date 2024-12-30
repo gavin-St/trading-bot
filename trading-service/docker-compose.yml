@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  flask-service:
+    build:
+      context: .
+      dockerfile: flask-service/Dockerfile
+    ports:
+      - "5000:5000"
+
+  strategy-service:
+    build:
+      context: .
+      dockerfile: strategy-service/Dockerfile
+
+# Shared base package
+volumes:
+  - ./alpaca-service:/usr/src/alpaca-service
