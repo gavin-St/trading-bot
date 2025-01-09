@@ -8,26 +8,26 @@ services:
     ports:
       - "5001:5000"
     volumes:
-      - .:/app  # Local directory mounted to container
-      - flask-service-data:/app/data  # Named volume for persistent data
+      - .:/app
+      - flask-service-data:/app/data
     environment:
       - FLASK_APP=run.py
       - FLASK_ENV=development
 
   strategy-service:
     build:
-      context: ./strategy-service  # Path to the strategy-service folder
-      dockerfile: Dockerfile  # Dockerfile for strategy-service
+      context: ./strategy-service
+      dockerfile: Dockerfile
     volumes:
-      - ./strategy-service:/app  # Local directory for code mounting
-      - strategy-service-data:/app/data  # Named volume for persistent data
+      - ./strategy-service:/app
+      - strategy-service-data:/app/data
     environment:
-      - PYTHONUNBUFFERED=1  # Ensure immediate log output
+      - PYTHONUNBUFFERED=1
     depends_on:
-      - strategy-service  # Ensure strategy-service starts before flask-service
-    command: python scheduler.py  # Command to run the scheduler
+      - strategy-service 
+    command: python scheduler.py 
 
 
 volumes:
-  flask-service-data:  # Named volume for flask-service
-  strategy-service-data:  # Named volume for strategy-service
+  flask-service-data:
+  strategy-service-data:
