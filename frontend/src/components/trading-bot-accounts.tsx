@@ -22,7 +22,7 @@ export function TradingBotAccountsComponent() {
   useEffect(() => {
     async function fetchAccounts() {
       try {
-        const response = await fetch('/api/accounts')
+        const response = await fetch('http://54.210.189.120:5000/api/accounts')
         if (!response.ok) {
           throw new Error(`Error fetching accounts: ${response.statusText}`)
         }
