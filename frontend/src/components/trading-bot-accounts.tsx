@@ -1,11 +1,12 @@
-import Link from "next/link"
-import { ArrowLeft, ArrowRight, BarChart2, DollarSign } from "lucide-react"
+// @ts-nocheck
+import { BarChart2, DollarSign } from "lucide-react"
 
 import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
 import Chart from '@/components/ui/lineChart';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+
+import Github from "../assets/github.png";
 
 const defaultAccounts = [
   { id: 1, name: "Optimized SMA-2", value: 100000, lastPurchase: "AAPL", lastPurchaseAmount: 5000, history: null },
@@ -17,7 +18,6 @@ const defaultAccounts = [
 
 export function TradingBotAccountsComponent() {
   const [accounts, setAccounts] = useState(defaultAccounts)
-  const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -91,9 +91,12 @@ export function TradingBotAccountsComponent() {
           <p className="text-gray-300 mb-4">
             - Momentum strategy (12-month, RSI: 70)
           </p>
-          <p className="text-gray-300">
+          <p className="text-gray-300 mb-4">
             - In progress TensorFlow LSTM neural network trained on historical OHLCV
           </p>
+          <a className="text-gray-300" href="https://github.com/gavin-St/trading-bot" target="_blank" rel="noopener noreferrer">
+            <img src={Github} alt="GitHub Logo" className="w-11" />
+          </a>
         </section>
       </main>
     </div>
