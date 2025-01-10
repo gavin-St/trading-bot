@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
  
 export default defineConfig({
-  base: '/trading-bot/frontend/',
+  base: '/trading-bot',
   build: {
     outDir: 'dist', 
   },
