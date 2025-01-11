@@ -31,21 +31,57 @@ def backtest(prices, top_assets, rebalance_period=20):
     
     return portfolio
 
-start = '2015-01-01'
-overall = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]
-symbols = overall.Symbol.to_list()
-print(symbols)
+def pricefilter_remove(ticker, df, removed):
+    df[ticker] = df[ticker][df[ticker].index <= removed[removed.Ticker == ticker].index[0]]
 
-removed = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[1][['Date', 'Removed']]
-removed = removed.set_index(removed.Date.Date)
-removed.index = pd.to_datetime(removed.index)
-removed = removed[removed.index >= start]
-removed = removed.Removed.dropna()
-print(removed)
+def pricefilter_add(ticker, df, overall):
+    date_added = overall.loc[overall.Symbol == ticker, 'Date added'].iloc[0]
+    df[ticker] = df[ticker][df[ticker].index >= date_added]
 
-symbols.extend(removed.Ticker.to_list())
+def momentum(all_mtl_ret, lookback):
+    all_mtl_ret_lb = all_mtl_ret.rolling(lookback).agg(lambda x: (x+1).prod() - 1)
+    all_mtl_ret_lb.dropna(inplace=True)
 
-df = yf.download(symbols, start=start)['Close']
-df.index = pd.to_datetime(df.index)
+    rets = []
 
-removed[removed.Ticker == ]
+    for row in range(len(all_mtl_ret_lb) - 1):
+        curr = all_mtl_ret_lb.iloc[row]
+        win = curr.nlargest(10)
+        win_ret = all_mtl_ret.loc[win.name + MonthEnd(1), win.index]
+        rets.append(win_ret.mean())
+
+    return (pd.Series(rets) + 1).prod() - 1
+
+def strategy(market_data, lookback, removed, overall):
+    """
+    Determines which stock to buy based on momentum strategy.
+
+    Args:
+        market_data (pd.DataFrame): Historical market data for multiple tickers.
+        lookback (int): Lookback period for momentum calculation (in months).
+        removed (pd.DataFrame): DataFrame of tickers removed from the market with their removal dates.
+        overall (pd.DataFrame): DataFrame of tickers added to the market with their addition dates.
+
+    Returns:
+        str: The ticker symbol of the stock to buy.
+    """
+    # Apply price filters
+    df = market_data.copy()
+    for ticker_rem in removed.Ticker:
+        if ticker_rem in df.columns:
+            pricefilter_remove(ticker_rem, df, removed)
+
+    for ticker_add in overall.Symbol:
+        if ticker_add in df.columns:
+            pricefilter_add(ticker_add, df, overall)
+
+    # Calculate monthly returns
+    monthly_returns = df.pct_change().resample('M').agg(lambda x: (x + 1).prod() - 1)
+    twelve_month_returns = monthly_returns.rolling(12).agg(lambda x: (x + 1).prod() - 1)
+    twelve_month_returns.dropna(inplace=True)
+
+    # Determine the stock to buy
+    latest_returns = twelve_month_returns.iloc[-1]
+    top_stock = latest_returns.nlargest(1).index[0]
+
+    return top_stock
