@@ -13,15 +13,17 @@ def backtest(strategy, data):
     Returns:
         list: A list of dictionaries containing the details of each trade (buy/sell) during the backtest.
     """
-    # Create a Backtest instance
     bt = Backtest(data, strategy, cash=10_000, commission=0.002)
-
-    # Run the backtest
     results = bt.run()
 
-    # Extract trades
-    trades = results['_trades']  # DataFrame of trades
+    bt.plot()
 
-    # Convert trades to a list of dictionaries
+    trades = results['_trades'] 
+
     trades_list = trades.to_dict('records') if not trades.empty else []
     return trades_list
+
+def optimize(bt):
+    optim = bt.optimize(n1 = range(50, 160, 10), n2 = range(50, 160, 10), constraint = lambda x: x.n2 - x.n1 > 20)
+
+    return optim
