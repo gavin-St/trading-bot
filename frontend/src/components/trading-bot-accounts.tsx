@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { BarChart2, DollarSign } from "lucide-react"
+import { toast } from "react-hot-toast";
 
 import { useState, useEffect } from 'react'
 import Chart from '@/components/ui/lineChart';
@@ -53,7 +54,10 @@ export function TradingBotAccountsComponent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="bg-opacity-50 backdrop-filter backdrop-blur-sm">
-                    <div className="h-32 bg-gradient-to-r from-gray-800 to-gray-700 rounded-md mb-4 flex items-center justify-center">
+                    <div 
+                      className="h-32 bg-gradient-to-r from-gray-800 to-gray-700 rounded-md mb-4 flex items-center justify-center"
+                      onClick={() => {if (!account.history) toast.error("Error: Server might be down. Please try again later.")}}
+                    >
                       {
                         account.history ?
                         <Chart data={account.history}/> :
